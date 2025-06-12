@@ -1,24 +1,48 @@
-from langchain_core.messages import HumanMessage,SystemMessage
-from langchain.chat_models import init_chat_model
+# agent.py
+import os
 from dotenv import load_dotenv
-from langchain_core.prompts import ChatPromptTemplate
-load_dotenv()
+from langgraph.prebuilt import create_react_agent
+from langchain_openai import ChatOpenAI
+from langchain_mcp_adapters.client import MultiServerMCPClient
+from langgraph.checkpoint.memory import InMemorySaver
+from agents.agents import create_custom_react_agent
+
+
+import json
 import asyncio
 
-model = init_chat_model("gpt-4o-mini",model_provider="openai")
+load_dotenv()
 
-async def run_agent(data:str):
-   
-    system_template = """
-   
-    You are a helpfull assistant and has to answe the user question:
-   
-        """
+# Crear modelo LLM y checkpointer en memoria
+llm = ChatOpenAI()
+checkpointer = InMemorySaver()
 
-    promp_template = ChatPromptTemplate.from_messages(
-        [("system",system_template),("user","{user_question}")]
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+mcp_path = os.path.join(BASE_DIR, "mcp.json")
+# Cargar configuración de servidores MCP
+with open(mcp_path, "r") as f:
+    servers_config = json.load(f)
+
+# Crear cliente MCP
+client = MultiServerMCPClient(servers_config)
+
+# Obtener herramientas MCP (esto requiere async)
+tools = asyncio.run(client.get_tools())
+print("🔧 Tools cargadas:", [tool.name for tool in tools])
+
+# Crear agente LangGraph con memoria
+
+agent = create_custom_react_agent(llm,tools,checkpointer=checkpointer)
+
+
+# Función pública para ejecutar el agente
+async def run_agent(data: str):
+    config = {"configurable": {"thread_id": "1"}}
+    result = await agent.ainvoke(
+        {"messages": [{"role": "user", "content": data}]},
+        config,
+        
     )
-    prompt = promp_template.invoke({"user_question":data})
-    response = await model.ainvoke(prompt)
-    
-    return response
+    print("RESULT:",result)
+    return result["messages"][-1]

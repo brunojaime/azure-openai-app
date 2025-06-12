@@ -1,0 +1,16 @@
+{
+    "math": {
+        "command": "python",
+        "args": [
+            "../servers/math_servers.py"
+        ],
+        "transport": "stdio"
+    },
+    "dasdeporte": {
+        "command": "python",
+        "args": [
+            "../servers/das_deportes_fetch.py"
+        ],
+        "transport": "stdio"
+    }
+} 
