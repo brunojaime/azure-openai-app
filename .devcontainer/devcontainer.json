@@ -1,19 +1,17 @@
 {
-    "name": "fastapi-niegui-app",
-    "dockerComposeFile":[
-        "../docker-compose.yml"
-    ],
-    "service":"backend",
-    "workspaceFolder": "/workspace",
-    "settings":{
-        "terminal.integrated.defaultProfile.linux": "bash",
-        "python.defaultInterpreterPath": "/usr/local/bin/python"
-    },
-    "extensions":[
-        "ms-python.python",
-        "ms-python.vscode-pylance",
-        "ms-toolsai.jupyter"
-    ],
-    "postCreateCommand": "pip install -r backend/requirements.txt && pip install -r frontend/requirements.txt",
-    "remoteUser": "root"
+  "name": "fastapi-nicegui-app",
+  "dockerComposeFile": ["../docker-compose.yml"],
+  "service": "backend",
+  "workspaceFolder": "/workspace",
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "python.defaultInterpreterPath": "/usr/local/bin/python"
+  },
+  "extensions": [
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-toolsai.jupyter"
+  ],
+  "postCreateCommand": "pip install -r backend/requirements.txt && pip install -r frontend/requirements.txt",
+  "remoteUser": "root"
 }
